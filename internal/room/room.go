@@ -41,7 +41,7 @@ func (s *RoomRenderSystem) Draw(engine *tinyecs.Engine, screen *ebiten.Image) {
 				var tileImage *ebiten.Image
 				switch tile.TileType {
 				case habbo.TileTypeFloor:
-					tileImage = assets.Floor
+					tileImage = assets.Get("room/floor_tile")
 					s.drawTile(screen, float64(x), float64(y), tileImage)
 					ebitenutil.DebugPrint(screen, fmt.Sprintf("%d, %d", obj.userHoveredTile.X, obj.userHoveredTile.Y))
 					ebitenutil.DebugPrint(screen, fmt.Sprintf("\n%.2f, %.2f", camera.Cam.PosX, camera.Cam.PosY))
@@ -74,15 +74,22 @@ func (s *RoomRenderSystem) cartesianToIsometric(tileSize int, x float64, y float
 }
 
 func (s *RoomRenderSystem) screenToMap(posX int, posY int, tileWidth int, tileHeight int, cam camera.Camera) (int, int) {
-	// map.x = (screen.x / TILE_WIDTH_HALF + screen.y / TILE_HEIGHT_HALF) /2;
-	// map.y = (screen.y / TILE_HEIGHT_HALF -(screen.x / TILE_WIDTH_HALF)) /2;
-	posX -= tileWidth / 2
+	/*posX -= tileWidth / 2
 	posX += int(cam.PosX)
 	posY += int(cam.PosY)
 	tileHeight /= 2
 	tileWidth /= 2
 	x := (posX/tileWidth + posY/tileHeight) / 2
 	y := (posY/tileHeight - (posX / tileWidth)) / 2
+	*/
+	posX += int(cam.PosX)
+	posY += int(cam.PosY)
+	pXOffset := -16
+	pYOffset := -16
+
+	x := (((posX - tileHeight) - pXOffset) / tileWidth) + ((posY - pYOffset) / tileHeight)
+	y := (((posY - pYOffset) / tileHeight) - ((posX-tileHeight)-pXOffset)/tileWidth)
+
 	return x, y
 }
 
@@ -95,7 +102,7 @@ func (s *RoomRenderSystem) drawTile(screen *ebiten.Image, x float64, y float64, 
 func (s *RoomRenderSystem) drawHighlight(screen *ebiten.Image, x float64, y float64) {
 	coordX, coordY := s.cartesianToIsometric(64, x, y)
 
-	tile := assets.TileHighlight
+	tile := assets.Get("room/tile_hover")
 	render.Image(camera.Cam, screen, tile, coordX, coordY-5)
 }
 
@@ -105,11 +112,11 @@ func (s *RoomRenderSystem) drawWall(screen *ebiten.Image, x float64, y float64, 
 	var tile *ebiten.Image
 
 	if left {
-		tile = assets.WallLeft
+		tile = assets.Get("room/wall_l")
 		coordX -= 8
 		coordY -= 91
 	} else {
-		tile = assets.WallRight
+		tile = assets.Get("room/wall_r")
 		coordY -= 107
 	}
 	render.Image(camera.Cam, screen, tile, coordX, coordY)
@@ -118,8 +125,8 @@ func (s *RoomRenderSystem) drawWall(screen *ebiten.Image, x float64, y float64, 
 func (s *RoomRenderSystem) drawDoor(screen *ebiten.Image, x float64, y float64) {
 	coordX, coordY := s.cartesianToIsometric(64, x, y)
 
-	var tileDoor = assets.Door
-	var tileFloor = assets.DoorFloor
+	var tileDoor = assets.Get("room/door")
+	var tileFloor = assets.Get("room/door_floor")
 
 	render.Image(camera.Cam, screen, tileDoor, coordX, coordY-91)
 	render.Image(camera.Cam, screen, tileFloor, coordX, coordY+16)

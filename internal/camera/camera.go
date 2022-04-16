@@ -3,7 +3,7 @@ package camera
 var Cam Camera
 
 func init() {
-	Cam = Camera{-500, -500}
+	Cam = Camera{-200, -200}
 }
 
 type Camera struct {

@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kaiaverkvist/tinyecs"
+	"github.com/red-letter-day/habbo/internal/client/assets"
 	"github.com/red-letter-day/habbo/internal/habbo"
 	"github.com/red-letter-day/habbo/internal/room"
 )
@@ -22,6 +23,15 @@ x00000
 x00000`
 
 func NewGame() Game {
+	assets.Register(
+		"assets/room/floor_tile.png",
+		"assets/room/wall_l.png",
+		"assets/room/wall_r.png",
+		"assets/room/door.png",
+		"assets/room/door_floor.png",
+		"assets/room/tile_hover.png",
+	)
+
 	e := tinyecs.NewEngine()
 
 	roomEntity := room.RoomEntity{
